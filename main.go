@@ -44,7 +44,7 @@ func GetPrice(symbol string) (float64, error) {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: go run main.go <symbol1> <symbol2> ...")
+		fmt.Println("Usage: ccp <symbol1> <symbol2> ...")
 		os.Exit(1)
 	}
 
