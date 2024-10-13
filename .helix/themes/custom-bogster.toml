@@ -1,0 +1,9 @@
+inherits =  "bogster"
+
+# Override theme settings.
+"comment" = { fg = "comment" }
+
+[palette]
+# Override existing colors or add new colors.
+url = "#c0c0c0"
+comment = "#87af5f"
