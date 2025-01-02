@@ -14,10 +14,13 @@ type TickerPrice struct {
 	Price  string `json:"price"`
 }
 
-func GetPrice(symbol string) (float64, error) {
+// Define a custom type for the HTTP Get function
+type httpGet func(url string) (*http.Response, error)
+
+func GetPrice(symbol string, get httpGet) (float64, error) {
 	url := "https://api.binance.com/api/v1/ticker/price?symbol=" + symbol + "USDT"
 
-	resp, err := http.Get(url)
+	resp, err := get(url)
 	if err != nil {
 		return 0, fmt.Errorf("error making request: %v", err)
 	}
@@ -52,7 +55,7 @@ func main() {
 
 	err_count := 0
 	for _, symbol := range symbols {
-		price, err := GetPrice(symbol)
+		price, err := GetPrice(symbol, http.Get)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error getting price for %s: %v\n", symbol, err)
 			err_count += 1
