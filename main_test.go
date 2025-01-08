@@ -68,6 +68,15 @@ func TestGetPrice_ErrorScenarios(t *testing.T) {
 			mockError:      nil,
 			expectedErrMsg: "unexpected HTTP response status code:",
 		},
+		{
+			name: "Invalid trading pair",
+			mockResponse: &http.Response{
+				StatusCode: http.StatusBadRequest,
+				Body:       io.NopCloser(strings.NewReader(``)),
+			},
+			mockError:      nil,
+			expectedErrMsg: "invalid trading pair:",
+		},
 	}
 
 	for _, tc := range testCases {
