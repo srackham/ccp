@@ -22,7 +22,6 @@ func TestGetPrice_Success(t *testing.T) {
 			Body:       io.NopCloser(bytes.NewReader(mockBody)),
 		}, nil
 	}
-
 	price, err := GetPrice("BTC", mockClient)
 	assert.NoError(t, err, "GetPrice should not return error")
 	assert.Equal(t, expectedPrice, price, "GetPrice should return the correct price")
