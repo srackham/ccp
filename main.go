@@ -27,7 +27,7 @@ func GetPrice(symbol string, get httpGet) (float64, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusBadRequest {
-    return 0, fmt.Errorf("invalid trading pair: %sUSDT", symbol)
+		return 0, fmt.Errorf("invalid trading pair: %sUSDT", symbol)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -55,7 +55,14 @@ func GetPrice(symbol string, get httpGet) (float64, error) {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: ccp <symbol1> <symbol2> ...")
+		fmt.Print(`
+A simple minded Go CLI command to fetch and display one or more crypto prices.
+Fetches prices using the Binance HTTP ticker price API.
+
+Usage: ccp SYMBOL...
+
+SYMBOL is a ticker symbol e.g. BTC
+`)
 		os.Exit(1)
 	}
 
