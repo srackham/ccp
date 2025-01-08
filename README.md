@@ -1,9 +1,8 @@
 # Crypto Currency Prices
-13-Nov-2024
 
-`ccp` is a simple minded Go CLI command to fetch and display crypto prices.
+A simple minded Go CLI command to fetch and display one or more crypto prices.
+Fetches prices using the Binance HTTP ticker price API.
 
-- Fetches prices using the Binance HTTP ticker price API.
+    Usage: ccp SYMBOL...
 
-## TODO
-- Add --help option.
+SYMBOL is a ticker symbol e.g. BTC
