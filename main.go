@@ -26,6 +26,10 @@ func GetPrice(symbol string, get httpGet) (float64, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusBadRequest {
+    return 0, fmt.Errorf("invalid trading pair: %sUSDT", symbol)
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		return 0, fmt.Errorf("unexpected HTTP response status code: %d", resp.StatusCode)
 	}
