@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,15 +28,56 @@ func TestGetPrice_Success(t *testing.T) {
 	assert.Equal(t, expectedPrice, price, "GetPrice should return the correct price")
 }
 
-func TestGetPrice_HttpError(t *testing.T) {
-	// Mock failing HTTP GET request
-	mockClient := func(url string) (*http.Response, error) {
-		return nil, errors.New("mock http error")
+func TestGetPrice_ErrorScenarios(t *testing.T) {
+	testCases := []struct {
+		name           string
+		mockResponse   *http.Response
+		mockError      error
+		expectedErrMsg string
+	}{
+		{
+			name:           "HTTP Error",
+			mockResponse:   nil,
+			mockError:      errors.New("mock http error"),
+			expectedErrMsg: "error making request:",
+		},
+		{
+			name: "Invalid JSON in response",
+			mockResponse: &http.Response{
+				StatusCode: http.StatusOK,
+				Body:       io.NopCloser(strings.NewReader(`{"invalid": json}`)),
+			},
+			mockError:      nil,
+			expectedErrMsg: "error parsing JSON:",
+		},
+		{
+			name: "Missing Price Data",
+			mockResponse: &http.Response{
+				StatusCode: http.StatusOK,
+				Body:       io.NopCloser(strings.NewReader(`{"data":{}}`)),
+			},
+			mockError:      nil,
+			expectedErrMsg: "error converting price to float:",
+		},
+		{
+			name: "Non-200 Status Code",
+			mockResponse: &http.Response{
+				StatusCode: http.StatusNotFound,
+				Body:       io.NopCloser(strings.NewReader(`{"error": "Not Found"}`)),
+			},
+			mockError:      nil,
+			expectedErrMsg: "unexpected HTTP response status code:",
+		},
 	}
 
-	_, err := GetPrice("ETH", mockClient)
-	assert.Error(t, err, "GetPrice should return error for failed request")
-	assert.Contains(t, err.Error(), "error making request:", "Error message should indicate HTTP error")
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mockGet := func(url string) (*http.Response, error) {
+				return tc.mockResponse, tc.mockError
+			}
+			_, err := GetPrice("ETH", mockGet)
+			assert.Error(t, err, "GetPrice should return error for %s", tc.name)
+			assert.Contains(t, err.Error(), tc.expectedErrMsg, "Error message should indicate %s", tc.name)
+		})
+	}
 }
-
-// ... other test cases (ReadBodyError, JsonUnmarshalError, PriceConversionError)
